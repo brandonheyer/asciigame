@@ -1,0 +1,19 @@
+#board {
+    position: relative;
+    font-family: "Courier New";
+    font-size: 24px;
+    color: #cccccc;
+}
+
+.cell, .creep {
+    float: left;
+    width: 0.5em;
+    height: 0.5em;
+    line-height: 0.5em;
+}
+
+.creep {
+    position: absolute;
+    color: #ff0000;
+    line-height: 0.875em;
+}
