@@ -1,7 +1,7 @@
-var config = {
-    width: 25,
-    height: 25
-};
+var _ = require( 'underscore' ),
+    d3 = require( 'd3' ),
+    $ = require( 'jquery' ),
+    Cell = require( './Cell.js' );
 
 function Game( config ) {
     this.initialize( config );
@@ -16,13 +16,14 @@ _.extend( Game.prototype, {
         this._creeps
             .enter()
                 .append( 'div' )
-                .classed( 'creep', true )
+                .attr( 'class', 'creep' );
 
         this._creeps
             .exit()
                 .remove();
 
-        this._creeps.each( function( d, i ) {
+        this._creeps
+            .each( function( d, i ) {
             if ( !( d.draw( d3.select( this ), tick ) ) ) {
                 creepData[ i ] = undefined;
             };
@@ -35,9 +36,9 @@ _.extend( Game.prototype, {
     },
 
     _populateBoard: function() {
-        for ( var y = 0; y < config.height; y++ ) {
+        for ( var y = 0; y < this._height; y++ ) {
             this._boardData.push( [] );
-            for ( var x = 0; x < config.width; x++ ) {
+            for ( var x = 0; x < this._width; x++ ) {
                 this._boardData[ y ].push(
                     new Cell(
                         {
@@ -72,6 +73,9 @@ _.extend( Game.prototype, {
                 width: ( 12 * this._width ) + 'px'
             } );
 
+        this.$canvas = $( '#canvas' );
+        this.$board = $( '#board' );
+
         this._cells = this._board.selectAll( 'div.cell' ).data( this._cellData );
         this._creeps = this._board.selectAll( 'div.creep' ).data( this._creepData );
         this._counter = d3.select( '#counter' );
@@ -81,13 +85,20 @@ _.extend( Game.prototype, {
             .enter()
                 .append( 'div' )
                 .classed( 'cell', true )
-                .on( 'click', _.bind( function( d ) {
-                    this.spawn( Cell, {
-                        value: '*',
-                        x: d._x,
-                        y: d._y
-                    } );
-                }, this ) );
+                .attr( 'data-id', function( d, i ) { return i; } );
+
+        this.$canvas.on( 'click', '.cell', _.bind( function( event ) {
+            var id = parseInt( $( event.currentTarget ).attr( 'data-id' ), 10 ),
+                cell = this._cellData[ id ];
+
+            console.log( 'click' );
+
+            this.spawn( Cell, {
+                value: '*',
+                x: cell._x,
+                y: cell._y
+            } );
+        }, this ) );
 
         this._cells.each( function( d, i ) {
             d.draw( d3.select( this ) );
@@ -134,4 +145,4 @@ _.extend( Game.prototype, {
     }
 } );
 
-new Game( config );
+module.exports = Game;

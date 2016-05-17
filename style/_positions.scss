@@ -1,0 +1,11 @@
+@for $y from 0 through 100 {
+    .y-#{$y} {
+        top: 0.5em * $y;
+    }
+}
+
+@for $x from 0 through 100 {
+    .x-#{$x} {
+        left: 0.5em * $x;
+    }
+}

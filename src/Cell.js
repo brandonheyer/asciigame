@@ -1,3 +1,6 @@
+var _ = require( 'underscore' ),
+    d3 = require( 'd3' );
+
 function Cell( options ) {
     this.initialize( options );
 }
@@ -16,14 +19,16 @@ _.extend( Cell.prototype, {
     },
 
     draw: function( el, tick ) {
+        var classed = {};
+
         if ( !this.value ) {
             return;
         }
 
         if ( this.value === '*' ) {
-            if ( Math.floor( Math.random() * 1000 ) < 10 ) {
+            if ( Math.floor( Math.random() * 1000 ) < 100 ) {
                 this.game.spawn( Cell, {
-                    value: '+',
+                    value: '*',
                     x: this.game.x( this._x + ( Math.floor( Math.random() * 3 ) - 1 ) ),
                     y: this.game.y( this._y + ( Math.floor( Math.random() * 3 ) - 1 ) )
                 } );
@@ -31,10 +36,7 @@ _.extend( Cell.prototype, {
         }
 
         if ( this.value === '*' || this.value === '+' ) {
-            el.style( {
-                top: ( this._y * 12 ) + 'px',
-                left: ( this._x * 12 ) + 'px'
-            } );
+            el.attr( 'class', 'creep x-' + this._x + ' y-' + this._y );
 
             this._life -= tick;
 
@@ -52,3 +54,5 @@ _.extend( Cell.prototype, {
         this._life = d3.random.normal( 2000, 1000 )();
     }
 } );
+
+module.exports = Cell;
