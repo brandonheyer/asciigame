@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/brandonheyer/asciigame#readme",
   "dependencies": {
+    "class-extend": "^0.1.2",
     "d3": "^3.5.17",
     "jquery": "^2.2.3",
     "underscore": "^1.8.3"

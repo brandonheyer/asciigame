@@ -1,17 +1,14 @@
 var _ = require( 'underscore' ),
     d3 = require( 'd3' ),
     $ = require( 'jquery' ),
-    Cell = require( './Cell.js' );
+    Cell = require( './Cell.js' ),
+    Base = require( './Base.js' );
 
-function Game( config ) {
-    this.initialize( config );
-}
-
-_.extend( Game.prototype, {
+module.exports = Base.extend( {
     _drawCells: function( tick ) {
         this._creeps = this._board.selectAll( 'div.creep' ).data( this._creepData );
 
-        var creepData = this._creepData;
+        var creepData = this._creepData, filledCells = {};
 
         this._creeps
             .enter()
@@ -24,10 +21,17 @@ _.extend( Game.prototype, {
 
         this._creeps
             .each( function( d, i ) {
-            if ( !( d.draw( d3.select( this ), tick ) ) ) {
-                creepData[ i ] = undefined;
-            };
-        } );
+                var d3This = d3.select( this );
+
+                if ( d.update( d3This, tick ) ) {
+                    if ( !filledCells[ d._y + '-' + d._x ] ) {
+                        d.draw( d3This, tick );
+                        filledCells[ d._y + '-' + d._x ] = true;
+                    }
+                } else {
+                    creepData[ i ] = undefined;
+                };
+            } );
 
         this._creepData = _.compact( this._creepData );
 
@@ -121,7 +125,7 @@ _.extend( Game.prototype, {
     },
 
     run: function( time ) {
-        this._frames.unshift();
+        this._frames.shift();
         this._frames.push( time - this._last );
 
         this._drawCells( time - this._last );
@@ -129,20 +133,10 @@ _.extend( Game.prototype, {
     },
 
     x: function( x ) {
-        if ( x < 0 ) {
-            return x + this._width;
-        }
-
-        return x % this._width;
+        return ( x < 0 ) ? x + this._width : x % this._width;
     },
 
     y: function( y ) {
-        if ( y < 0 ) {
-            return y + this._height;
-        }
-
-        return y % this._height;
+        return ( y < 0 ) ? y + this._height : y % this._height;
     }
 } );
-
-module.exports = Game;
